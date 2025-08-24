@@ -1,14 +1,12 @@
-/* Kleurenpalet */
 :root {
     --main-bg: #f6f3fa;
-    --primary: #a345fb;      /* Paars */
+    --primary: #a345fb;
     --primary-light: #e5d6fa;
     --text-dark: #2d1e3c;
     --text-light: #fff;
     --border: #d1c4e9;
 }
 
-/* Algemene body styling */
 body {
     background: var(--main-bg);
     color: var(--text-dark);
@@ -17,7 +15,6 @@ body {
     min-height: 100vh;
 }
 
-/* Header styling */
 header {
     background: var(--primary-light);
     box-shadow: 0 2px 8px rgba(162, 89, 230, 0.08);
@@ -52,7 +49,6 @@ header {
     line-height: 1.1;
 }
 
-/* Controls layout */
 #controls {
     display: flex;
     align-items: center;
@@ -218,9 +214,9 @@ header {
 #taal:focus,
 #sortering:hover,
 #sortering:focus {
-    background: #7a2fd6;      /* Donkerdere paarse tint */
+    background: #7a2fd6;
     border-color: #7a2fd6;
-    color: #fff;              /* Lichte tekstkleur */
+    color: #fff;
     outline: none;
     cursor: pointer;
 }
@@ -248,7 +244,7 @@ header {
 
 #item-container {
     display: grid;
-    grid-template-columns: repeat(5, 1fr); /* 5 per rij op desktop */
+    grid-template-columns: repeat(5, 1fr);
     gap: 2rem 1.5rem;
     justify-items: center;
     align-items: stretch;
@@ -259,70 +255,77 @@ header {
 }
 
 .item {
-    background: #fff;
+    background: linear-gradient(135deg, #fff 70%, #e5d6fa 100%);
     color: #2d1e3c;
     border-radius: 18px;
-    box-shadow: 0 4px 24px 0 rgba(163, 69, 251, 0.10), 0 1.5px 0 #e5d6fa;
-    min-width: 0;
+    box-shadow: 0 4px 24px 0 rgba(163, 69, 251, 0.12), 0 1.5px 0 #e5d6fa;
     width: 100%;
-    max-width: 240px;
+    max-width: 220px;
+    min-width: 0;
     padding: 1.3rem 1rem 1.7rem 1rem;
     box-sizing: border-box;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition: transform 0.18s, box-shadow 0.18s;
+    transition: transform 0.18s, box-shadow 0.18s, background 0.2s;
     position: relative;
-    border: 1.5px solid #e5d6fa;
-}
-.item:hover {
-    transform: translateY(-7px) scale(1.035);
-    box-shadow: 0 10px 32px #a345fb33, 0 6px 24px #e5d6fa;
-    border-color: #a345fb;
-}
-.item img {
-    width: 90px;
-    height: 90px;
-    object-fit: cover;
-    border-radius: 12px;
-    margin-bottom: 0.7rem;
-    background: #e5d6fa;
-    box-shadow: 0 2px 12px #e5d6fa;
-}
-.item h3 {
-    font-size: 1.1rem;
-    margin: 0.2rem 0 0.4rem 0;
-    font-weight: 700;
-    color: #a345fb;
-}
-.item p {
-    font-size: 0.97rem;
-    margin: 0.2rem 0 0.5rem 0;
-    color: #2d1e3c;
-}
-.item a {
-    color: #a345fb;
-    font-weight: 600;
-    text-decoration: none;
-    margin-top: auto;
-    transition: color 0.2s;
-}
-.item a:hover {
-    color: #7a2fd6;
-    text-decoration: underline;
+    border: 2px solid #e5d6fa;
+    overflow: hidden;
 }
 
-/* Responsive: 3 per rij op tablets, 2 per rij op mobiel */
+.item:hover {
+    transform: translateY(-8px) scale(1.04) rotate(-1deg);
+    box-shadow: 0 10px 32px #a345fb33, 0 6px 24px #e5d6fa;
+    border-color: #a345fb;
+    background: linear-gradient(135deg, #f3eaff 60%, #a345fb22 100%);
+}
+
+.item::before {
+    content: "";
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, #a345fb33 0%, transparent 70%);
+    z-index: 0;
+}
+
+.item p, .item b {
+    position: relative;
+    z-index: 1;
+}
+
+.item p:first-child b {
+    font-size: 1.1rem;
+    color: #a345fb;
+    letter-spacing: 0.5px;
+}
+
+.item p:last-child {
+    margin-top: 0.7rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    background: #a345fb;
+    border-radius: 8px;
+    padding: 0.2rem 0.7rem;
+    display: inline-block;
+    box-shadow: 0 1px 6px #e5d6fa;
+}
+
 @media (max-width: 1200px) {
     #item-container {
         grid-template-columns: repeat(4, 1fr);
     }
+    .item { max-width: 180px; }
 }
 @media (max-width: 900px) {
     #item-container {
         grid-template-columns: repeat(3, 1fr);
     }
+    .item { max-width: 160px; }
 }
 @media (max-width: 600px) {
     #item-container {
@@ -332,5 +335,6 @@ header {
     }
     .item {
         padding: 1rem 0.5rem 1.2rem 0.5rem;
+        max-width: 100%;
     }
 }

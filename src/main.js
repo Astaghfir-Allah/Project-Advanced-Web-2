@@ -1,24 +1,25 @@
 'use strict';
 
 const API_KEY = "da11d657a81da66146e4f28ae63d04f8";
-const API_URL = "http://ws.audioscrobbler.com/2.0/";
+const API_URL = "https://ws.audioscrobbler.com/2.0/";
 
-async function fetchData(method, query = ""){
-    const url = `${API_URL}?method=chart.gettopartists&api_key=${API_KEY}&format=json&limit=20`;
-    const res = await fetch(url);
-    return await res.json();
+async function fetchData(method, query = "") {
+  const url = `${API_URL}?method=${method}&${query}&api_key=${API_KEY}&format=json&limit=20`;
+  const res = await fetch(url);
+  return await res.json();
 }
 
 function render(items, type, callback) {
   const container = document.getElementById("item-container");
   container.innerHTML = "";
 
-  items.slice(0, 20).forEach((item, i) => {
-    if (i % 5 === 0) container.innerHTML += "<div class='row'></div>";
-    const row = container.lastChild;
+  items = items
+    .map((item, i) => ({ ...item, _rank: parseInt(item['@attr']?.rank || i + 1) }))
+    .sort((a, b) => a._rank - b._rank);
 
-    const html = callback(item, type);
-    row.innerHTML += html;
+  items.slice(0, 20).forEach((item, i) => {
+    const html = callback(item, i);
+    container.innerHTML += html;
   });
 
   container.querySelectorAll(".item").forEach(div => {
@@ -30,35 +31,36 @@ function render(items, type, callback) {
   });
 }
 
-function renderArtist(item) {
+function renderArtist(item, i) {
   return `<div class="item" data-url="${item.url}">
     <p><b>${item.name}</b></p>
-    <p>Listeners: ${item.listeners}</p>
-    <p>Playcount: ${item.playcount}</p>
-    <p>Streamable: ${item.streamable}</p>
-    <p>MBID: ${item.mbid || "n.v.t."}</p>
-    <p>Type: Artist</p>
+    <p>Rang: ${item._rank}</p>
+    <p>Luisteraars: ${item.listeners}</p>
+    <p>Speelteller: ${item.playcount}</p>
+    <p>Streambaar: ${item.streamable}</p>
+    <p>Type: Artiest</p>
   </div>`;
 }
 
-function renderAlbum(item) {
+function renderAlbum(item, i) {
   return `<div class="item" data-url="${item.url}">
     <p><b>${item.name}</b></p>
+    <p>Rang: ${item._rank}</p>
     <p>Artiest: ${item.artist?.name || item.artist}</p>
-    <p>Listeners: ${item.listeners}</p>
-    <p>Playcount: ${item.playcount}</p>
-    <p>MBID: ${item.mbid || "n.v.t."}</p>
+    <p>Luisteraars: ${item.listeners}</p>
+    <p>Speelteller: ${item.playcount}</p>
     <p>Type: Album</p>
   </div>`;
 }
 
-function renderTrack(item) {
+function renderTrack(item, i) {
   return `<div class="item" data-url="${item.url}">
     <p><b>${item.name}</b></p>
+    <p>Rang: ${item._rank}</p>
     <p>Artiest: ${item.artist?.name || item.artist}</p>
-    <p>Listeners: ${item.listeners}</p>
-    <p>Playcount: ${item.playcount}</p>
-    <p>Streamable: ${item.streamable}</p>
+    <p>Luisteraars: ${item.listeners}</p>
+    <p>Speelteller: ${item.playcount}</p>
+    <p>Streambaar: ${item.streamable}</p>
     <p>Type: Track</p>
   </div>`;
 }
