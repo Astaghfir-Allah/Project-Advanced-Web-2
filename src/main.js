@@ -15,13 +15,19 @@ async function fetchArtistInfo(artistName) {
     const data = await res.json();
     if(data.artist) {
       return {
-        tags: data.artist.tags?.tag?.[0]?.name || "Geen genre"
+        tags: data.artist.tags?.tag?.[0]?.name || "Geen genre" // alleen eerste genre
       };
     }
   } catch (err) {
     console.error("Fout bij artist.getinfo:", err);
   }
   return {tags: 'Geen genre'};
+}
+
+async function fetchTrackGenre(track) {
+  if(!track.artist || !track.artist.name) return "Geen genre";
+  const info = await fetchArtistInfo(track.artist.name);
+  return info.tags;
 }
 
 async function render(items) {
@@ -31,7 +37,7 @@ async function render(items) {
   for(const [i, item] of items.slice(0,20).entries()) {
     let html = "";
     if(item.type === "Artiest") html = await renderArtist(item, i);
-    else html = renderTrack(item, i);
+    else html = await renderTrack(item, i);
     container.innerHTML += html;
   }
 
@@ -43,7 +49,6 @@ async function render(items) {
     }
   });
 }
-
 
 async function renderArtist(item, i) {
   const info = await fetchArtistInfo(item.name);
@@ -59,16 +64,20 @@ async function renderArtist(item, i) {
 }
 
 
-function renderTrack(item, i) {
+async function renderTrack(item, i) {
+  const genre = await fetchTrackGenre(item);
+
   return `<div class="item" data-url="${item.url}">
     <p><b>${item.name}</b></p>
     <p>Rang: ${item._rank}</p>
     <p>Artiest: ${item.artist?.name || item.artist}</p>
+    <p>Genre: ${genre}</p>
     <p>Luisteraars: ${item.listeners}</p>
     <p>Speelteller: ${item.playcount}</p>
     <p>Type: Track</p>
   </div>`;
 }
+
 
 let allItems = [];
 
