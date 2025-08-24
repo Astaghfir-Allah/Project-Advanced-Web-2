@@ -9,34 +9,55 @@ async function fetchData(method, query = "") {
   return await res.json();
 }
 
-function render(items) {
+async function fetchArtistInfo(artistName) {
+  try {
+    const res = await fetch(`${API_URL}?method=artist.getinfo&artist=${encodeURIComponent(artistName)}&api_key=${API_KEY}&format=json`);
+    const data = await res.json();
+    if(data.artist) {
+      return {
+        tags: data.artist.tags?.tag?.[0]?.name || "Geen genre"
+      };
+    }
+  } catch (err) {
+    console.error("Fout bij artist.getinfo:", err);
+  }
+  return {tags: 'Geen genre'};
+}
+
+async function render(items) {
   const container = document.getElementById("item-container");
   container.innerHTML = "";
-  items.slice(0, 20).forEach((item, i) => {
+
+  for(const [i, item] of items.slice(0,20).entries()) {
     let html = "";
-    if (item.type === "Artiest") html = renderArtist(item, i);
+    if(item.type === "Artiest") html = await renderArtist(item, i);
     else html = renderTrack(item, i);
     container.innerHTML += html;
-  });
+  }
 
   container.querySelectorAll(".item").forEach(div => {
     const url = div.dataset.url;
-    if (url) {
+    if(url) {
       div.style.cursor = "pointer";
       div.addEventListener("click", () => window.open(url, "_blank"));
     }
   });
 }
 
-function renderArtist(item, i) {
+
+async function renderArtist(item, i) {
+  const info = await fetchArtistInfo(item.name);
+
   return `<div class="item" data-url="${item.url}">
     <p><b>${item.name}</b></p>
     <p>Rang: ${item._rank}</p>
+    <p>Genre: ${info.tags}</p>
     <p>Luisteraars: ${item.listeners}</p>
     <p>Speelteller: ${item.playcount}</p>
     <p>Type: Artiest</p>
   </div>`;
 }
+
 
 function renderTrack(item, i) {
   return `<div class="item" data-url="${item.url}">
