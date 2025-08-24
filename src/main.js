@@ -15,7 +15,7 @@ async function fetchArtistInfo(artistName) {
     const data = await res.json();
     if(data.artist) {
       return {
-        tags: data.artist.tags?.tag?.[0]?.name || "Geen genre" // alleen eerste genre
+        tags: data.artist.tags?.tag?.[0]?.name || "Geen genre"
       };
     }
   } catch (err) {

@@ -1,13 +1,57 @@
 <!doctype html>
-<html lang="en">
+<html lang="nl">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dancefloor</title>
+    <link rel="stylesheet" href="src/style.css">
+    <link rel="icon" href="/image/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <title>Vite + Vue</title>
   </head>
   <body>
-    <div id="app"></div>
+    <header>
+        <div id="logo-container">
+            <img src="/image/logo.png" alt="logo.png">
+            <h1>Dancefloor</h1>
+        </div>
+        <div id="controls">
+            <div id="zoek-container">
+                <input type="text" id="zoek" placeholder="Zoek een maaltijd...">
+                <button id="zoek-knop">Zoeken</button>
+            </div>
+            <div id="filter-container">
+                <button id="filter-knop">Filter</button>
+                <div id="filter-popup">
+                    <label for="categorie-filter">Filter op categorie:</label>
+                    <select id="categorie-filter">
+                        <option value="all">Alle</option>
+                    </select>
+                    <button id="pas-filter-toe">Filteren</button>
+                </div>
+            </div>
+            <div id="sortering-container">
+                <label id="label-sortering">Sorteren op</label>
+                <select id="sortering">
+                    <option value="alle">Alles</option>
+                    <option value="artiest">Artiesten</option>
+                    <option value="album">Albums</option>
+                    <option value="track">Tracks</option>
+                </select>
+            </div>
+            <button id="favoriet">Favorieten</button>
+            <button class="mode-toggle">
+                <img id="mode-icon" src="/image/moon.svg" alt="Toggle theme" />
+            </button>
+            <select id="taal">
+                <option value="nl">NL</option>
+                <option value="en">EN</option>
+            </select>
+        </div>
+    </header>
+    <main>
+        <div id="item-container"></div>
+    </main>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
