@@ -315,6 +315,93 @@ header {
     box-shadow: 0 1px 6px #e5d6fa;
 }
 
+#filter-popup {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: linear-gradient(135deg, #fff 70%, #f3eaff 100%);
+    border: 1.5px solid var(--primary);
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(163, 69, 251, 0.15), 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 1rem 1.2rem;
+    z-index: 20;
+    min-width: 240px;
+    animation: fadeDown 0.25s ease-out;
+}
+
+@keyframes fadeDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#filter-popup label {
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 0.3rem;
+    display: block;
+    font-size: 0.95rem;
+}
+
+#filter-popup select {
+    width: 100%;
+    padding: 0.5rem 0.8rem;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    margin-bottom: 0.9rem;
+    transition: border 0.2s, background 0.2s;
+}
+
+#filter-popup select:focus,
+#filter-popup select:hover {
+    border-color: var(--primary);
+    background: #f9f6ff;
+    outline: none;
+}
+
+#filter-popup button {
+    background: var(--primary);
+    color: var(--text-light);
+    border: none;
+    border-radius: 10px;
+    padding: 0.6rem 0;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+}
+
+#filter-popup button:hover {
+    background: #8a3fd9;
+    transform: translateY(-2px);
+}
+
+#filter-popup {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  z-index: 1000;
+}
+
+.hidden {
+  display: none;
+}
+
+#filter-popup { display: none; }
+#filter-container.active #filter-popup { display: block; }
+
 @media (max-width: 1200px) {
     #item-container {
         grid-template-columns: repeat(4, 1fr);
