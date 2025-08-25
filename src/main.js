@@ -15,6 +15,149 @@ const container = document.getElementById("item-container");
 const genreCache = new Map();
 const modeToggle = document.querySelector(".mode-toggle");
 const modeIcon = document.getElementById("mode-icon");
+const taalSelect = document.getElementById("taal");
+
+const translations = {
+  nl: {
+    add: "Voeg toe",
+    remove: "Verwijder",
+    rank: "Rang",
+    genre: "Genre",
+    listeners: "Luisteraars",
+    playcount: "Speelteller",
+    type: "Type",
+    noFavorites: "Geen favorieten gevonden.",
+    filter: "Filter",
+    reset: "Reset",
+    search: "Zoek",
+    searchPlaceholder: "Zoek naar artiesten of nummers...",
+    favorites: "Favorieten",
+    sort: {
+      "naam-asc": "Naam (A-Z)",
+      "naam-desc": "Naam (Z-A)",
+      "rang-asc": "Rang (oplopend)",
+      "rang-desc": "Rang (aflopend)",
+      "luisteraars-asc": "Luisteraars (min-max)",
+      "luisteraars-desc": "Luisteraars (max-min)",
+      "speelteller-asc": "Speelteller (min-max)",
+      "speelteller-desc": "Speelteller (max-min)"
+    },
+    filterOptions: {
+      all: "Alle",
+      artist: "Artiest",
+      track: "Nummer",
+      none: "Geen genre"
+    },
+    header: {
+      favorieten: "Favorieten",
+      home: "Home",
+      back: "Terug naar Home",
+      sorteringLabel: "Sorteren op",
+      filterTypeLabel: "Filter op type:",
+      filterGenreLabel: "Filter op genre:",
+      filtersHeader: "Filters"
+    }
+  },
+  en: {
+    add: "Add",
+    remove: "Remove",
+    rank: "Rank",
+    genre: "Genre",
+    listeners: "Listeners",
+    playcount: "Playcount",
+    type: "Type",
+    noFavorites: "No favorites found.",
+    filter: "Filter",
+    reset: "Reset",
+    search: "Search",
+    searchPlaceholder: "Search for artists or tracks...",
+    favorites: "Favorites",
+    sort: {
+      "naam-asc": "Name (A-Z)",
+      "naam-desc": "Name (Z-A)",
+      "rang-asc": "Rank (ascending)",
+      "rang-desc": "Rank (descending)",
+      "luisteraars-asc": "Listeners (low-high)",
+      "luisteraars-desc": "Listeners (high-low)",
+      "speelteller-asc": "Playcount (low-high)",
+      "speelteller-desc": "Playcount (high-low)"
+    },
+    filterOptions: {
+      all: "All",
+      artist: "Artist",
+      track: "Track",
+      none: "No genre"
+    },
+    header: {
+      favorieten: "Favorites",
+      home: "Home",
+      back: "Back to Home",
+      sorteringLabel: "Sort by",
+      filterTypeLabel: "Filter by type:",
+      filterGenreLabel: "Filter by genre:",
+      filtersHeader: "Filters"
+    }
+  }
+};
+
+let currentLang = localStorage.getItem("lang") || "nl";
+
+const applyTranslations = () => {
+  document.getElementById("label-sortering").textContent = translations[currentLang].header.sorteringLabel;
+  document.querySelector("#filter-popup h3").textContent = translations[currentLang].header.filtersHeader;
+  document.querySelector('label[for="type-filter"]').textContent = translations[currentLang].header.filterTypeLabel;
+  document.querySelector('label[for="genre-filter"]').textContent = translations[currentLang].header.filterGenreLabel;
+  document.getElementById("pas-filter-toe").textContent = translations[currentLang].filter;
+  document.getElementById("reset-filter").textContent = translations[currentLang].reset;
+  document.getElementById("zoek-knop").textContent = translations[currentLang].search;
+
+  document.querySelectorAll(".favoriet-knop").forEach(btn => {
+    const span = btn.querySelector("span");
+    const artistName = btn.dataset.artist;
+    if (favorieten.has(artistName)) {
+      span.textContent = translations[currentLang].remove;
+    } else {
+      span.textContent = translations[currentLang].add;
+    }
+  });
+
+  document.querySelectorAll(".item").forEach(div => {
+    const artistName = div.dataset.artist;
+    const item = allItems.find(i => (i.artist?.name || i.name) === artistName);
+    if (!item) return;
+
+    div.querySelector("#item-name b").textContent = item.name;
+    div.querySelector("p:nth-of-type(2)").textContent = `${translations[currentLang].rank}: ${item._rank}`;
+    div.querySelector("p:nth-of-type(3) .genre-placeholder").textContent = item.genre;
+    div.querySelector("p:nth-of-type(4)").textContent = `${translations[currentLang].listeners}: ${item.listeners}`;
+    div.querySelector("p:nth-of-type(5)").textContent = `${translations[currentLang].playcount}: ${item.playcount}`;
+    div.querySelector("p:nth-of-type(6)").textContent = `${translations[currentLang].type}: ${item.type}`;
+  });
+
+  document.getElementById("zoek").placeholder = translations[currentLang].searchPlaceholder;
+
+  favorietHeaderKnop.title = translations[currentLang].favorites;
+
+  Array.from(sorteringSelect.options).forEach(opt => {
+    if (translations[currentLang].sort[opt.value]) {
+      opt.textContent = translations[currentLang].sort[opt.value];
+    }
+  });
+
+  Array.from(typeFilterSelect.options).forEach(opt => {
+    if (opt.value === "all") opt.textContent = translations[currentLang].filterOptions.all;
+    if (opt.value === "Artiest") opt.textContent = translations[currentLang].filterOptions.artist;
+    if (opt.value === "Track") opt.textContent = translations[currentLang].filterOptions.track;
+  });
+
+  Array.from(genreFilterSelect.options).forEach(opt => {
+    if(opt.value === "all") opt.textContent = translations[currentLang].filterOptions.all;
+    else if(opt.value === "Geen genre") opt.textContent = translations[currentLang].filterOptions.none;
+  });
+
+  taalSelect.value = currentLang;
+  updateFavorietHeaderKnop();
+};
 
 if(localStorage.getItem("darkMode") === "true"){
     document.body.classList.add("dark-mode");
@@ -46,10 +189,11 @@ const fetchData = async (method, query = "") => {
 };
 
 const fetchArtistInfo = async (artistName) => {
-  if(genreCache.has(artistName)) return genreCache.get(artistName);
+  if (genreCache.has(artistName)) return genreCache.get(artistName);
   try {
     const res = await fetch(`${API_URL}?method=artist.getinfo&artist=${encodeURIComponent(artistName)}&api_key=${API_KEY}&format=json`);
-    const genre = res.json?.artist?.tags?.tag?.[0]?.name || "Geen genre";
+    const data = await res.json();
+    const genre = data?.artist?.tags?.tag?.[0]?.name || "Geen genre";
     genreCache.set(artistName, { tags: genre });
     return { tags: genre };
   } catch {
@@ -59,7 +203,10 @@ const fetchArtistInfo = async (artistName) => {
 
 const fetchGenreCached = async (item) => {
   if(item.type === "Artiest") return (await fetchArtistInfo(item.name)).tags;
-  if(item.type === "Track" && item.artist?.name) return (await fetchArtistInfo(item.artist.name)).tags;
+  if(item.type === "Track") {
+    const artistName = item.artist?.name || item.artist || item.name;
+    return (await fetchArtistInfo(artistName)).tags;
+  }
   return "Geen genre";
 };
 
@@ -113,10 +260,34 @@ const render = async (items) => {
   }));
 };
 
-
 const vulGenres = () => {
-  const genres = Array.from(new Set(allItems.map(i => i.genre || "Geen genre").filter(Boolean)));
-  genreFilterSelect.innerHTML = '<option value="all">Alle</option>' + genres.map(g => `<option value="${g}">${g}</option>`).join('');
+  const genresSet = new Set(allItems.map(i => i.genre || "Geen genre").filter(Boolean));
+  const genres = Array.from(genresSet).filter(g => g !== "Geen genre").sort((a, b) => a.localeCompare(b));
+
+  genreFilterSelect.innerHTML = `<option value="all">${translations[currentLang].filterOptions.all}</option>`;
+
+  genres.forEach(g => {
+    const option = document.createElement("option");
+    option.value = g;
+    option.textContent = g;
+    genreFilterSelect.appendChild(option);
+  });
+
+  const noneOption = document.createElement("option");
+  noneOption.value = "Geen genre";
+  noneOption.textContent = translations[currentLang].filterOptions.none;
+  genreFilterSelect.appendChild(noneOption);
+};
+
+const updateGenresInItems = () => {
+  container.querySelectorAll(".item").forEach(div => {
+    const artistName = div.dataset.artist;
+    const item = allItems.find(i => (i.artist?.name || i.name) === artistName);
+    if (item) {
+      const el = div.querySelector(".genre-placeholder");
+      if(el) el.textContent = item.genre;
+    }
+  });
 };
 
 pasFilterToeKnop.addEventListener("click", () => {
@@ -169,21 +340,33 @@ document.addEventListener("click", e => { if(!filterContainer.contains(e.target)
 const favorietHeaderKnop = document.getElementById("favoriet-knop");
 let showingFavorieten = false;
 
+const updateFavorietHeaderKnop = () => {
+  const img = favorietHeaderKnop.querySelector("img");
+  const text = favorietHeaderKnop.querySelector("b");
+
+  if (showingFavorieten) {
+    img.src = "../image/home.svg";
+    text.textContent = translations[currentLang].header.back;
+  } else {
+    img.src = "../image/selected_star.svg";
+    text.textContent = translations[currentLang].header.favorieten;
+  }
+};
+
 favorietHeaderKnop.addEventListener("click", async () => {
   if (showingFavorieten) {
     await render(allItems);
     showingFavorieten = false;
-    favorietHeaderKnop.querySelector("img").src = "../image/selected_star.svg";
   } else {
     const favItems = allItems.filter(item => favorieten.has(item.artist?.name || item.name));
     if (favItems.length === 0) {
-      container.innerHTML = "<p style='color:red'>Geen favorieten gevonden.</p>";
+      container.innerHTML = `<p class="red-msg" style="color:red">${translations[currentLang].noFavorites}</p>`;
     } else {
       await render(favItems);
     }
     showingFavorieten = true;
-    favorietHeaderKnop.querySelector("img").src = "../image/unselected_star.svg";
   }
+  updateFavorietHeaderKnop();
 });
 
 const toggleFavoriet = (artistName, btn) => {
@@ -193,11 +376,11 @@ const toggleFavoriet = (artistName, btn) => {
   if (favorieten.has(artistName)) {
     favorieten.delete(artistName);
     img.src = "../image/unselected_star.svg";
-    span.textContent = "Voeg toe";
+    span.textContent = translations[currentLang].add;
   } else {
     favorieten.add(artistName);
     img.src = "../image/selected_star.svg";
-    span.textContent = "Verwijder";
+    span.textContent = translations[currentLang].remove;
   }
   localStorage.setItem("favorieten", JSON.stringify([...favorieten]));
 };
@@ -225,4 +408,12 @@ const toggleFavoriet = (artistName, btn) => {
     console.error(err);
     container.innerHTML="<p style='color:red'>Fout bij laden van data.</p>";
   }
+  applyTranslations();
+
+  taalSelect.addEventListener("change", () => {
+    currentLang = taalSelect.value;
+    localStorage.setItem("lang", currentLang);
+    updateGenresInItems();
+    applyTranslations();
+  });
 })();
