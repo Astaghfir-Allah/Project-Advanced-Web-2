@@ -11,6 +11,7 @@ const filterPopup = document.getElementById("filter-popup");
 const pasFilterToeKnop = document.getElementById("pas-filter-toe");
 const typeFilterSelect = document.getElementById("type-filter");
 const genreFilterSelect = document.getElementById("genre-filter");
+const sorteringSelect = document.getElementById("sortering");
 
 const fetchData = async (method, query = "") => {
   const res = await fetch(`${API_URL}?method=${method}&${query}&api_key=${API_KEY}&format=json&limit=100`);
@@ -149,6 +150,41 @@ const setupZoek = () => {
   zoekKnop.addEventListener("click", () => zoek(true));
 };
 
+const sorteerItems = (items) => {
+  const value = sorteringSelect.value;
+
+  const sorted = [...items];
+  switch(value) {
+    case "naam-asc":
+      sorted.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+      break;
+    case "naam-desc":
+      sorted.sort((a, b) => (b.name || "").localeCompare(a.name || ""));
+      break;
+    case "rang-asc":
+      sorted.sort((a, b) => (a._rank || 0) - (b._rank || 0));
+      break;
+    case "rang-desc":
+      sorted.sort((a, b) => (b._rank || 0) - (a._rank || 0));
+      break;
+    case "luisteraars-asc":
+      sorted.sort((a, b) => parseInt(a.listeners) - parseInt(b.listeners));
+      break;
+    case "luisteraars-desc":
+      sorted.sort((a, b) => parseInt(b.listeners) - parseInt(a.listeners));
+      break;
+    case "speelteller-asc":
+      sorted.sort((a, b) => parseInt(a.playcount) - parseInt(b.playcount));
+      break;
+    case "speelteller-desc":
+      sorted.sort((a, b) => parseInt(b.playcount) - parseInt(a.playcount));
+      break;
+    default:
+      break;
+  }
+  return sorted;
+};
+
 const vulGenresInItems = async () => {
   const promises = allItems.map(async item => {
     if (!item.genre || item.genre === "Geen genre") {
@@ -171,6 +207,11 @@ const updateGenresInDOM = async () => {
   });
   vulGenres();
 };
+
+sorteringSelect.addEventListener("change", () => {
+  const gesorteerd = sorteerItems(allItems);
+  render(gesorteerd);
+});
 
 (async () => {
   try {
