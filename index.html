@@ -34,7 +34,10 @@
                     <select id="genre-filter">
                         <option value="all">Alle</option>
                     </select>
-                    <button id="pas-filter-toe">Filteren</button>
+                    <div class="filter-buttons">
+                        <button id="pas-filter-toe">Filteren</button>
+                        <button id="reset-filter">Reset</button>
+                    </div>
                 </div>
             </div>
             <div id="sortering-container">
@@ -50,7 +53,10 @@
                     <option value="speelteller-desc">Speelteller ↓</option>
                 </select>
             </div>
-            <button id="favoriet">Favorieten</button>
+            <button id="favoriet-knop" class="favoriet-header">
+                <img src="../image/selected_star.svg" alt="Favorieten">
+                <b>Favorieten</b>
+            </button>
             <button class="mode-toggle">
                 <img id="mode-icon" src="/image/moon.svg" alt="Toggle theme" />
             </button>
