@@ -2,7 +2,15 @@
 
 const API_KEY = "da11d657a81da66146e4f28ae63d04f8";
 const API_URL = "https://ws.audioscrobbler.com/2.0/";
+
 let allItems = [];
+
+const filterContainer = document.getElementById("filter-container");
+const filterKnop = document.getElementById("filter-knop");
+const filterPopup = document.getElementById("filter-popup");
+const pasFilterToeKnop = document.getElementById("pas-filter-toe");
+const typeFilterSelect = document.getElementById("type-filter");
+const genreFilterSelect = document.getElementById("genre-filter");
 
 const fetchData = async (method, query = "") => {
   const res = await fetch(`${API_URL}?method=${method}&${query}&api_key=${API_KEY}&format=json&limit=100`);
@@ -88,6 +96,45 @@ async function render(items) {
   });
 }
 
+filterKnop.addEventListener("click", (e) => {
+  filterContainer.classList.toggle("active");
+});
+
+document.addEventListener("click", (e) => {
+  if (!filterContainer.contains(e.target) && filterContainer.classList.contains("active")) {
+    filterContainer.classList.remove("active");
+  }
+});
+
+const vulGenres = () => {
+    const genres = Array.from(new Set(allItems
+        .map(item => item.genre || "Geen genre")
+        .filter(Boolean)));
+    genreFilterSelect.innerHTML = '<option value="all">Alle</option>';
+    genres.forEach(g => {
+        const option = document.createElement("option");
+        option.value = g;
+        option.textContent = g;
+        genreFilterSelect.appendChild(option);
+    });
+};
+
+pasFilterToeKnop.addEventListener("click", () => {
+    const typeVal = typeFilterSelect.value;
+    const genreVal = genreFilterSelect.value;
+
+    const filtered = allItems.filter(item => {
+        let okType = typeVal === "all" || item.type === typeVal;
+        let okGenre = genreVal === "all" || item.genre === genreVal;
+        return okType && okGenre;
+    });
+
+    render(filtered);
+    filterPopup.classList.add("hidden");
+});
+
+vulGenres();
+
 const setupZoek = () => {
   const zoekInput = document.getElementById("zoek");
   const zoekKnop = document.getElementById("zoek-knop");
@@ -102,19 +149,61 @@ const setupZoek = () => {
   zoekKnop.addEventListener("click", () => zoek(true));
 };
 
+const vulGenresInItems = async () => {
+  const promises = allItems.map(async item => {
+    if (!item.genre || item.genre === "Geen genre") {
+      if (item.type === "Artiest") {
+        item.genre = (await fetchArtistInfoCached(item.name)).tags;
+      } else if (item.type === "Track") {
+        item.genre = await fetchTrackGenreCached(item);
+      }
+    }
+  });
+  await Promise.all(promises);
+};
+
+const updateGenresInDOM = async () => {
+  await vulGenresInItems();
+  const container = document.getElementById("item-container");
+  allItems.forEach(item => {
+    const el = container.querySelector(`.item[data-artist="${item.artist?.name || item.name}"] .genre-placeholder`);
+    if (el) el.textContent = item.genre;
+  });
+  vulGenres();
+};
+
 (async () => {
   try {
-    const [artists, tracks] = await Promise.all([fetchData("chart.gettopartists"), fetchData("chart.gettoptracks")]);
+    const [artists, tracks] = await Promise.all([
+      fetchData("chart.gettopartists"),
+      fetchData("chart.gettoptracks")
+    ]);
     const N = 20;
+
     allItems = [
-      ...(artists.artists?.artist?.slice(0,N).map((a,i) => ({...a, type:"Artiest", _rank: parseInt(a['@attr']?.rank) || i+1})) || []),
-      ...(tracks.tracks?.track?.slice(0,N).map((t,i) => ({...t, type:"Track", _rank: parseInt(t['@attr']?.rank) || i+1})) || [])
+      ...(artists.artists?.artist?.slice(0, N).map((a, i) => ({
+        ...a,
+        type: "Artiest",
+        _rank: parseInt(a['@attr']?.rank) || i + 1
+      })) || []),
+      ...(tracks.tracks?.track?.slice(0, N).map((t, i) => ({
+        ...t,
+        type: "Track",
+        _rank: parseInt(t['@attr']?.rank) || i + 1
+      })) || [])
     ].sort(() => Math.random() - 0.5);
 
-    if(allItems.length === 0) document.getElementById("item-container").innerHTML = "<p style='color:red'>Geen items gevonden.</p>";
-    else { await render(allItems); setupZoek(); }
-  } catch(err) {
+    if (allItems.length === 0) {
+      document.getElementById("item-container").innerHTML =
+        "<p style='color:red'>Geen items gevonden.</p>";
+    } else {
+      await render(allItems);
+      setupZoek();
+      updateGenresInDOM();   
+    }
+  } catch (err) {
     console.error(err);
-    document.getElementById("item-container").innerHTML = "<p style='color:red'>Fout bij laden van data.</p>";
+    document.getElementById("item-container").innerHTML =
+      "<p style='color:red'>Fout bij laden van data.</p>";
   }
 })();
