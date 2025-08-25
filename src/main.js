@@ -21,6 +21,19 @@ const modeToggle = document.querySelector(".mode-toggle");
 const modeIcon = document.getElementById("mode-icon");
 const taalSelect = document.getElementById("taal");
 
+const observer = new MutationObserver(mutations => {
+  mutations.forEach(mutation => {
+    if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+      mutation.addedNodes.forEach(node => {
+        if (node.classList && node.classList.contains("item")) {
+          console.log(`Nieuwe item toegevoegd: ${node.dataset.artist}`);
+        }
+      });
+    }
+  });
+});
+observer.observe(container, { childList: true });
+
 const translations = {
   nl: {
     add: "Voeg toe",
