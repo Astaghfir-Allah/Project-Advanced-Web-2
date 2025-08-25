@@ -452,6 +452,7 @@ body.dark-mode #filter-popup {
     box-shadow: 0 4px 16px rgba(163, 69, 251, 0.18);
 }
 
+body.dark-mode #filter-popup select,
 body.dark-mode #zoek-knop:hover,
 body.dark-mode #filter-knop:hover,
 body.dark-mode #favoriet:hover,

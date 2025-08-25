@@ -32,7 +32,6 @@ modeToggle.addEventListener("click", () => {
     localStorage.setItem("darkMode", isDark);
 });
 
-
 let favorieten;
 try {
   const stored = JSON.parse(localStorage.getItem("favorieten")) || [];
