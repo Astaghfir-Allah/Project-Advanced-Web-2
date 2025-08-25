@@ -567,3 +567,319 @@ body.dark-mode #mode-icon {
     }
     .item { padding: 1rem .5rem 1.2rem; max-width: 100%; }
 }
+
+@media (max-width: 600px) {
+    #controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+        margin: 1rem;
+    }
+
+    #zoek-container {
+        width: 100%;
+        flex-direction: row;
+    }
+
+    #zoek-container input {
+        flex: 1;
+        border-radius: 25px 0 0 25px;
+        font-size: 0.9rem;
+    }
+
+    #zoek-knop {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    #filter-container, #sortering-container, #favoriet-knop, .mode-toggle, #taal {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    #sortering-container {
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    #filter-popup {
+        min-width: auto;
+        width: 100%;
+    }
+
+    #logo-container h1 {
+        font-size: 1.8rem;
+    }
+
+    #logo-container img {
+        height: 50px;
+    }
+}
+
+@media (max-width: 400px) {
+    #item-container {
+        grid-template-columns: 1fr;
+        padding: 0 1rem;
+    }
+}
+
+@media (max-width: 600px) {
+    #filter-popup {
+        top: auto;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 95%;
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 600px) {
+    /* Header */
+    #controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+        margin: 1rem;
+    }
+
+    /* Zoekbalk full-width */
+    #zoek-container {
+        width: 100%;
+        flex-direction: row;
+    }
+    #zoek-container input {
+        flex: 1;
+        font-size: 0.9rem;
+        padding: 0.51rem 1rem;
+    }
+    #zoek-knop {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    /* Filter + Sort naast elkaar */
+    #filter-container, #sortering-container {
+        width: 49%;
+        display: inline-flex;
+        justify-content: space-between;
+    }
+    #filter-knop, #sortering {
+        flex: 1;
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    /* Favorieten + Mode + Taal compact */
+    #favoriet-knop {
+        width: auto;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.85rem;
+        justify-content: center;
+    }
+
+    .mode-toggle {
+        width: 36px;
+        height: 36px;
+    }
+
+    #taal {
+        width: auto;
+        padding: 0.4rem 0.6rem;
+        font-size: 0.85rem;
+    }
+
+    /* Zet mode-knop naast taal */
+    #favoriet-knop + .mode-toggle + #taal {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    /* Filter-popup binnen scherm */
+    #filter-popup {
+        min-width: auto;
+        width: 95%;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 110%;
+        padding: 1rem;
+    }
+
+    /* Logo kleiner */
+    #logo-container img {
+        height: 50px;
+    }
+    #logo-container h1 {
+        font-size: 1.8rem;
+    }
+}
+@media (max-width: 600px) {
+    /* Mode knop SVG centering */
+    .mode-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+    }
+    .mode-toggle img {
+        width: 20px;  /* iets kleiner voor mobiel */
+        height: 20px;
+        object-fit: contain;
+    }
+
+    /* Taalknop smaller */
+    #taal {
+        width: auto;
+        min-width: 0;
+        padding: 0.3rem 0.5rem;
+        font-size: 0.8rem;
+        height: 36px;
+        border-radius: 18px;
+    }
+
+    /* Container voor favorieten + mode + taal compact en in lijn */
+    #favoriet-knop, .mode-toggle, #taal {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.25rem;
+        vertical-align: middle;
+    }
+
+    /* Extra kleine aanpassing favorietenknop */
+    #favoriet-knop {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 600px) {
+    /* Header flex setup */
+    #controls {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin: 1rem;
+    }
+
+    /* Filter + Sort naast elkaar */
+    .top-controls {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.5rem;
+        width: 100%;
+    }
+
+    #filter-container, #sortering-container {
+        flex: 1;
+    }
+
+    #filter-knop, #sortering {
+        width: 100%;
+        padding: 0.5rem 0.7rem;
+        font-size: 0.9rem;
+    }
+
+    /* Favorieten + Mode + Taal compact inline */
+    .bottom-controls {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        width: 100%;
+    }
+
+    #favoriet-knop, .mode-toggle, #taal {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #favoriet-knop {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.8rem;
+        border-radius: 20px;
+    }
+
+    .mode-toggle {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+    }
+
+    .mode-toggle img {
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
+    }
+
+    #taal {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.8rem;
+        height: 36px;
+        border-radius: 18px;
+    }
+
+    /* Filter-popup leesbaar en binnen scherm */
+    #filter-popup {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 95%;
+        max-width: 320px;
+        padding: 1rem;
+        border-radius: 12px;
+        background: var(--primary-light);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        z-index: 50;
+    }
+
+    /* Inputs en buttons in filter-popup full width */
+    #filter-popup label, #filter-popup select, #filter-popup button {
+        display: block;
+        width: 100%;
+        margin-bottom: 0.6rem;
+    }
+}
+/* Op mobiel: filter-popup fullscreen overlay */
+@media (max-width: 600px) {
+    #filter-popup {
+        position: fixed !important;
+        top: 52%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60%;
+        padding: 1.2rem;
+        border-radius: 16px;
+        background: var(--primary-light);
+        box-shadow: 0 6px 30px rgba(0,0,0,0.25);
+        z-index: 9999;
+    }
+
+    /* Optional: overlay achter popup */
+    #filter-popup::before {
+        content: '';
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.25);
+        z-index: -1;
+        border-radius: 0;
+    }
+
+    #filter-popup label,
+    #filter-popup select,
+    #filter-popup button {
+        width: 100%;
+        display: block;
+        margin-bottom: 0.6rem;
+    }
+}
+
+
