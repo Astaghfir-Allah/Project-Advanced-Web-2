@@ -13,6 +13,25 @@ const genreFilterSelect = document.getElementById("genre-filter");
 const sorteringSelect = document.getElementById("sortering");
 const container = document.getElementById("item-container");
 const genreCache = new Map();
+const modeToggle = document.querySelector(".mode-toggle");
+const modeIcon = document.getElementById("mode-icon");
+
+if(localStorage.getItem("darkMode") === "true"){
+    document.body.classList.add("dark-mode");
+    modeIcon.src = "../image/sun-svgrepo-com.svg";
+} else {
+    document.body.classList.remove("dark-mode");
+    modeIcon.src = "../image/moon.svg";
+}
+
+modeToggle.addEventListener("click", () => {
+    const isDark = document.body.classList.toggle("dark-mode");
+    
+    modeIcon.src = isDark ? "../image/sun-svgrepo-com.svg" : "../image/moon.svg";
+    
+    localStorage.setItem("darkMode", isDark);
+});
+
 
 let favorieten;
 try {

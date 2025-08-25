@@ -310,7 +310,6 @@ header {
     font-weight: 700;
     letter-spacing: .5px;
     color: #7a2fd6;
-    text-shadow: 0 1px 0 #fff,0 2px 4px rgba(0,0,0,.15);
     display: block;
     margin-bottom: .3rem;
     transition: transform .2s, text-shadow .2s, color .2s;
@@ -417,6 +416,96 @@ header {
 
 #reset-filter:hover {
     background: #999;
+}
+
+body.dark-mode {
+    --main-bg: #181028;
+    --primary-light: #26143a;
+    --text-dark: #f6f3fa;
+    --border: #3d2c5c;
+    --zoek-bg: #2d1e3c;
+    --taal-bg: #2d1e3c;
+}
+
+body.dark-mode {
+    background: var(--main-bg);
+    color: var(--text-dark);
+}
+
+body.dark-mode header {
+    background: var(--primary-light);
+    box-shadow: 0 2px 8px rgba(163, 69, 251, 0.10);
+}
+
+body.dark-mode #zoek-container input,
+body.dark-mode #taal,
+body.dark-mode #sortering {
+    background: var(--zoek-bg);
+    color: var(--text-dark);
+    border-color: var(--primary);
+}
+
+body.dark-mode #filter-popup {
+    background: var(--zoek-bg);
+    border-color: var(--primary);
+    color: var(--text-dark);
+    box-shadow: 0 4px 16px rgba(163, 69, 251, 0.18);
+}
+
+body.dark-mode #zoek-knop:hover,
+body.dark-mode #filter-knop:hover,
+body.dark-mode #favoriet:hover,
+body.dark-mode .mode-toggle:hover,
+body.dark-mode #taal:hover,
+body.dark-mode #sortering:hover {
+    background: #7a2fd6;
+    border-color: #e5d6fa;
+    color: #fff;
+}
+
+body.dark-mode {
+    --main-bg: #181028;
+    --primary: #a345fb;
+    --primary-light: #26143a;
+    --text-dark: #f6f3fa;
+    --text-light: #fff;
+    --border: #3d2c5c;
+}
+
+body.dark-mode .item {
+    background: linear-gradient(135deg, #26143a 70%, #3d2c5c 100%);
+    border: 2px solid #3d2c5c;
+    color: var(--text-dark);
+    box-shadow: 0 6px 28px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.25);
+}
+
+body.dark-mode .item:hover {
+    transform: translateY(-8px) scale(1.04) rotate(-1deg);
+    box-shadow: 0 12px 40px #000000aa, 0 6px 24px #3d2c5c77;
+    background: linear-gradient(135deg, #26143a 60%, #a345fb33 100%);
+}
+
+body.dark-mode .favoriet-knop {
+    background: #3d2c5c;
+    color: var(--text-light);
+}
+body.dark-mode .favoriet-knop:hover {
+    background: #5c3d87;
+}
+
+.mode-toggle {
+    width: 42px;
+    height: 42px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.mode-toggle:hover {
+    box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+    background: #8a3fd9;
+}
+
+body.dark-mode #mode-icon {
+    filter: brightness(1.2);
 }
 
 @media (max-width:1200px) {
