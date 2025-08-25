@@ -178,15 +178,15 @@ const applyTranslations = () => {
 
 if(localStorage.getItem("darkMode") === "true"){
     document.body.classList.add("dark-mode");
-    modeIcon.src = "/svg/sun.svg";
+    modeIcon.src = "https://ayd9qnoe70.ufs.sh/f/5vAvkXp0mVfubHZYmmnvKzuG40Mm1XZ6E7djynxP3NJYOkqe";
 } else {
     document.body.classList.remove("dark-mode");
-    modeIcon.src = "/svg/moon.svg";
+    modeIcon.src = "https://ayd9qnoe70.ufs.sh/f/5vAvkXp0mVfuNSk1kEVTbBVd2ZFPHMc38kJoqsl0KaznSE6f";
 }
 
 modeToggle.addEventListener("click", () => {
     const isDark = document.body.classList.toggle("dark-mode");
-    modeIcon.src = isDark ? "/svg/sun.svg" : "/svg/moon.svg";
+    modeIcon.src = isDark ? "https://ayd9qnoe70.ufs.sh/f/5vAvkXp0mVfubHZYmmnvKzuG40Mm1XZ6E7djynxP3NJYOkqe" : "https://ayd9qnoe70.ufs.sh/f/5vAvkXp0mVfuNSk1kEVTbBVd2ZFPHMc38kJoqsl0KaznSE6f";
     localStorage.setItem("darkMode", isDark);
 
     modeToggle.classList.add("active");
@@ -274,7 +274,7 @@ const render = async (items) => {
   const html = items.slice(0, 20).map(item => `
     <div class="item" data-url="${item.url}" data-artist="${item.artist?.name || item.name}" data-type="${item.type}">
       <button class="favoriet-knop" data-artist="${item.artist?.name || item.name}">
-        <img src="${favorieten.has(item.artist?.name || item.name) ? '/svg/selected_star.svg' : '/svg/unselected_star.svg'}" alt="Favoriet" class="favoriet-svg">
+        <img src="${favorieten.has(item.artist?.name || item.name) ? 'https://ayd9qnoe70.ufs.sh/f/5vAvkXp0mVfuOP1JntwIp5hYKUJrmAQTMylobVanxZie9gt1' : 'https://ayd9qnoe70.ufs.sh/f/5vAvkXp0mVfuGfc5pDw3NivSfhTclbIgPF74MQ1rLJB5sqWG'}" alt="Favoriet" class="favoriet-svg">
         <span>${favorieten.has(item.artist?.name || item.name) ? translations[currentLang].remove : translations[currentLang].add}</span>
       </button>
       <p id="item-name"><b>${item.name}</b></p>
@@ -379,10 +379,10 @@ const updateFavorietHeaderKnop = () => {
   const text = favorietHeaderKnop.querySelector("b");
 
   if (showingFavorieten) {
-    img.src = "/svg/home.svg";
+    img.src = "https://ayd9qnoe70.ufs.sh/f/5vAvkXp0mVfu6quasNj410nBwetYZiLVKu5gdbNUCyWfIPAv";
     text.textContent = translations[currentLang].header.back;
   } else {
-    img.src = "/svg/selected_star.svg";
+    img.src = "https://ayd9qnoe70.ufs.sh/f/5vAvkXp0mVfuOP1JntwIp5hYKUJrmAQTMylobVanxZie9gt1";
     text.textContent = translations[currentLang].header.favorieten;
   }
 };
@@ -403,7 +403,7 @@ const toggleFavoriet = (artistName, btn) => {
   const span = btn.querySelector('span');
 
   favorieten.has(artistName) ? favorieten.delete(artistName) : favorieten.add(artistName);
-  img.src = favorieten.has(artistName) ? "/svg/selected_star.svg" : "/svg/unselected_star.svg";
+  img.src = favorieten.has(artistName) ? "https://ayd9qnoe70.ufs.sh/f/5vAvkXp0mVfuOP1JntwIp5hYKUJrmAQTMylobVanxZie9gt1" : "https://ayd9qnoe70.ufs.sh/f/5vAvkXp0mVfuGfc5pDw3NivSfhTclbIgPF74MQ1rLJB5sqWG";
   span.textContent = favorieten.has(artistName) ? translations[currentLang].remove : translations[currentLang].add;
 
   localStorage.setItem("favorieten", JSON.stringify([...favorieten]));
