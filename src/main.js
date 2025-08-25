@@ -165,15 +165,15 @@ const applyTranslations = () => {
 
 if(localStorage.getItem("darkMode") === "true"){
     document.body.classList.add("dark-mode");
-    modeIcon.src = "/image/sun-svgrepo-com.svg";
+    modeIcon.src = "/svg/sun.svg";
 } else {
     document.body.classList.remove("dark-mode");
-    modeIcon.src = "/image/moon.svg";
+    modeIcon.src = "/svg/moon.svg";
 }
 
 modeToggle.addEventListener("click", () => {
     const isDark = document.body.classList.toggle("dark-mode");
-    modeIcon.src = isDark ? "../image/sun-svgrepo-com.svg" : "../image/moon.svg";
+    modeIcon.src = isDark ? "/svg/sun.svg" : "/svg/moon.svg";
     localStorage.setItem("darkMode", isDark);
 
     modeToggle.classList.add("active");
@@ -261,7 +261,7 @@ const render = async (items) => {
   const html = items.slice(0, 20).map(item => `
     <div class="item" data-url="${item.url}" data-artist="${item.artist?.name || item.name}" data-type="${item.type}">
       <button class="favoriet-knop" data-artist="${item.artist?.name || item.name}">
-        <img src="${favorieten.has(item.artist?.name || item.name) ? '/image/selected_star.svg' : '/image/unselected_star.svg'}" alt="Favoriet" class="favoriet-svg">
+        <img src="${favorieten.has(item.artist?.name || item.name) ? '/svg/selected_star.svg' : '/svg/unselected_star.svg'}" alt="Favoriet" class="favoriet-svg">
         <span>${favorieten.has(item.artist?.name || item.name) ? translations[currentLang].remove : translations[currentLang].add}</span>
       </button>
       <p id="item-name"><b>${item.name}</b></p>
@@ -366,10 +366,10 @@ const updateFavorietHeaderKnop = () => {
   const text = favorietHeaderKnop.querySelector("b");
 
   if (showingFavorieten) {
-    img.src = "/image/home.svg";
+    img.src = "/svg/home.svg";
     text.textContent = translations[currentLang].header.back;
   } else {
-    img.src = "/image/selected_star.svg";
+    img.src = "/svg/selected_star.svg";
     text.textContent = translations[currentLang].header.favorieten;
   }
 };
@@ -390,7 +390,7 @@ const toggleFavoriet = (artistName, btn) => {
   const span = btn.querySelector('span');
 
   favorieten.has(artistName) ? favorieten.delete(artistName) : favorieten.add(artistName);
-  img.src = favorieten.has(artistName) ? "/image/selected_star.svg" : "/image/unselected_star.svg";
+  img.src = favorieten.has(artistName) ? "/svg/selected_star.svg" : "/svg/unselected_star.svg";
   span.textContent = favorieten.has(artistName) ? translations[currentLang].remove : translations[currentLang].add;
 
   localStorage.setItem("favorieten", JSON.stringify([...favorieten]));
