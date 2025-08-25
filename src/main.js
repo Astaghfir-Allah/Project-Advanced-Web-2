@@ -2,7 +2,11 @@
 
 const API_KEY = "da11d657a81da66146e4f28ae63d04f8";
 const API_URL = "https://ws.audioscrobbler.com/2.0/";
+
 let allItems = [];
+let currentFilter = { type: "all", genre: "all" };
+let currentSort = "naam-asc";
+let currentSearch = "";
 
 const filterContainer = document.getElementById("filter-container");
 const filterKnop = document.getElementById("filter-knop");
@@ -161,19 +165,27 @@ const applyTranslations = () => {
 
 if(localStorage.getItem("darkMode") === "true"){
     document.body.classList.add("dark-mode");
-    modeIcon.src = "../image/sun-svgrepo-com.svg";
+    modeIcon.src = "/image/sun-svgrepo-com.svg";
 } else {
     document.body.classList.remove("dark-mode");
-    modeIcon.src = "../image/moon.svg";
+    modeIcon.src = "/image/moon.svg";
 }
 
 modeToggle.addEventListener("click", () => {
     const isDark = document.body.classList.toggle("dark-mode");
-    
     modeIcon.src = isDark ? "../image/sun-svgrepo-com.svg" : "../image/moon.svg";
-    
     localStorage.setItem("darkMode", isDark);
+
+    modeToggle.classList.add("active");
+    setTimeout(() => modeToggle.classList.remove("active"), 500);
+
+    if (!sessionStorage.getItem("firstModeToggle")) {
+        modeToggle.classList.add("first-toggle");
+        setTimeout(() => modeToggle.classList.remove("first-toggle"), 1000);
+        sessionStorage.setItem("firstModeToggle", "true");
+    }
 });
+
 
 let favorieten;
 try {
@@ -210,19 +222,54 @@ const fetchGenreCached = async (item) => {
   return "Geen genre";
 };
 
+const getFilteredSortedSearchedItems = () => {
+  let items = allItems;
+
+  items = items.filter(i =>
+    (currentFilter.type === "all" || i.type === currentFilter.type) &&
+    (currentFilter.genre === "all" || i.genre === currentFilter.genre)
+  );
+
+  if(currentSearch.length >= 0) {
+    const val = currentSearch.toLowerCase();
+    items = items.filter(i => i.name.toLowerCase().includes(val));
+  }
+
+  switch(currentSort){
+    case "naam-asc": items.sort((a,b)=> (a.name||"").localeCompare(b.name||"")); break;
+    case "naam-desc": items.sort((a,b)=> (b.name||"").localeCompare(a.name||"")); break;
+    case "rang-asc": items.sort((a,b)=> (a._rank||0) - (b._rank||0)); break;
+    case "rang-desc": items.sort((a,b)=> (b._rank||0) - (a._rank||0)); break;
+    case "luisteraars-asc": items.sort((a,b)=> parseInt(a.listeners) - parseInt(b.listeners)); break;
+    case "luisteraars-desc": items.sort((a,b)=> parseInt(b.listeners) - parseInt(a.listeners)); break;
+    case "speelteller-asc": items.sort((a,b)=> parseInt(a.playcount) - parseInt(b.playcount)); break;
+    case "speelteller-desc": items.sort((a,b)=> parseInt(b.playcount) - parseInt(a.playcount)); break;
+  }
+
+  return items;
+};
+
+const getCurrentViewItems = () => {
+  let items = getFilteredSortedSearchedItems();
+  if (showingFavorieten) {
+    items = items.filter(item => favorieten.has(item.artist?.name || item.name));
+  }
+  return items;
+};
+
 const render = async (items) => {
   const html = items.slice(0, 20).map(item => `
     <div class="item" data-url="${item.url}" data-artist="${item.artist?.name || item.name}" data-type="${item.type}">
       <button class="favoriet-knop" data-artist="${item.artist?.name || item.name}">
-      <img src="../image/unselected_star.svg" alt="Favoriet" class="favoriet-svg">
-      <span>Voeg toe</span>
-    </button>
+        <img src="${favorieten.has(item.artist?.name || item.name) ? '/image/selected_star.svg' : '/image/unselected_star.svg'}" alt="Favoriet" class="favoriet-svg">
+        <span>${favorieten.has(item.artist?.name || item.name) ? translations[currentLang].remove : translations[currentLang].add}</span>
+      </button>
       <p id="item-name"><b>${item.name}</b></p>
-      <p>Rang: ${item._rank}</p>
-      <p>Genre: <span class="genre-placeholder">Laden...</span></p>
-      <p>Luisteraars: ${item.listeners}</p>
-      <p>Speelteller: ${item.playcount}</p>
-      <p>Type: ${item.type}</p>
+      <p>${translations[currentLang].rank}: ${item._rank}</p>
+      <p>${translations[currentLang].genre}: <span class="genre-placeholder">Laden...</span></p>
+      <p>${translations[currentLang].listeners}: ${item.listeners}</p>
+      <p>${translations[currentLang].playcount}: ${item.playcount}</p>
+      <p>${translations[currentLang].type}: ${item.type}</p>
     </div>
   `).join('');
 
@@ -235,24 +282,9 @@ const render = async (items) => {
   container.querySelectorAll(".favoriet-knop").forEach(btn =>
     btn.addEventListener("click", e => {
       e.stopPropagation();
-      const artistName = btn.dataset.artist;
-      toggleFavoriet(artistName, btn);
+      toggleFavoriet(btn.dataset.artist, btn);
     })
   );
-
-  container.querySelectorAll(".favoriet-knop").forEach(btn => {
-  const artistName = btn.dataset.artist;
-  const img = btn.querySelector('img');
-  const span = btn.querySelector('span');
-
-  if (favorieten.has(artistName)) {
-    img.src = "../image/selected_star.svg";
-    span.textContent = "Verwijder";
-  } else {
-    img.src = "../image/unselected_star.svg";
-    span.textContent = "Voeg toe";
-  }
-});
 
   await Promise.all(items.slice(0,20).map(async item => {
     const el = container.querySelector(`.item[data-artist="${item.artist?.name || item.name}"] .genre-placeholder`);
@@ -291,43 +323,32 @@ const updateGenresInItems = () => {
 };
 
 pasFilterToeKnop.addEventListener("click", () => {
-  const typeVal = typeFilterSelect.value;
-  const genreVal = genreFilterSelect.value;
-  render(allItems.filter(i => (typeVal === "all" || i.type === typeVal) && (genreVal === "all" || i.genre === genreVal)));
+  currentFilter.type = typeFilterSelect.value;
+  currentFilter.genre = genreFilterSelect.value;
+  render(getCurrentViewItems());
   filterPopup.classList.add("hidden");
 });
 
+
 sorteringSelect.addEventListener("change", () => {
-  const value = sorteringSelect.value;
-  const sorted = [...allItems].sort((a,b) => {
-    switch(value){
-      case "naam-asc": return (a.name||"").localeCompare(b.name||"");
-      case "naam-desc": return (b.name||"").localeCompare(a.name||"");
-      case "rang-asc": return (a._rank||0) - (b._rank||0);
-      case "rang-desc": return (b._rank||0) - (a._rank||0);
-      case "luisteraars-asc": return parseInt(a.listeners) - parseInt(b.listeners);
-      case "luisteraars-desc": return parseInt(b.listeners) - parseInt(a.listeners);
-      case "speelteller-asc": return parseInt(a.playcount) - parseInt(b.playcount);
-      case "speelteller-desc": return parseInt(b.playcount) - parseInt(a.playcount);
-      default: return 0;
-    }
-  });
-  render(sorted);
+  currentSort = sorteringSelect.value;
+  render(getCurrentViewItems());
 });
 
 document.getElementById("reset-filter").addEventListener("click", () => {
     typeFilterSelect.value = "all";
     genreFilterSelect.value = "all";
-    sorteringSelect.value = "naam-asc"; // of default
-    render(allItems);
+    currentFilter = { type: "all", genre: "all" };
+    render(getCurrentViewItems());
 });
+
 
 const setupZoek = () => {
   const zoekInput = document.getElementById("zoek");
   const zoekKnop = document.getElementById("zoek-knop");
   const zoek = (force=false) => {
-    const val = zoekInput.value.trim().toLowerCase();
-    render(val.length===0 ? allItems : (val.length>=3 || force ? allItems.filter(i => i.name.toLowerCase().includes(val)) : allItems));
+    currentSearch = zoekInput.value.trim();
+    render(getCurrentViewItems());
   };
   zoekInput.addEventListener("input", () => zoek(false));
   zoekInput.addEventListener("keydown", e => e.key==="Enter" && zoek(true));
@@ -345,26 +366,21 @@ const updateFavorietHeaderKnop = () => {
   const text = favorietHeaderKnop.querySelector("b");
 
   if (showingFavorieten) {
-    img.src = "../image/home.svg";
+    img.src = "/image/home.svg";
     text.textContent = translations[currentLang].header.back;
   } else {
-    img.src = "../image/selected_star.svg";
+    img.src = "/image/selected_star.svg";
     text.textContent = translations[currentLang].header.favorieten;
   }
 };
 
 favorietHeaderKnop.addEventListener("click", async () => {
-  if (showingFavorieten) {
-    await render(allItems);
-    showingFavorieten = false;
+  showingFavorieten = !showingFavorieten;
+  const itemsToRender = getCurrentViewItems();
+  if(itemsToRender.length === 0 && showingFavorieten) {
+    container.innerHTML = `<p class="red-msg" style="color:red">${translations[currentLang].noFavorites}</p>`;
   } else {
-    const favItems = allItems.filter(item => favorieten.has(item.artist?.name || item.name));
-    if (favItems.length === 0) {
-      container.innerHTML = `<p class="red-msg" style="color:red">${translations[currentLang].noFavorites}</p>`;
-    } else {
-      await render(favItems);
-    }
-    showingFavorieten = true;
+    render(itemsToRender);
   }
   updateFavorietHeaderKnop();
 });
@@ -373,15 +389,10 @@ const toggleFavoriet = (artistName, btn) => {
   const img = btn.querySelector('img');
   const span = btn.querySelector('span');
 
-  if (favorieten.has(artistName)) {
-    favorieten.delete(artistName);
-    img.src = "../image/unselected_star.svg";
-    span.textContent = translations[currentLang].add;
-  } else {
-    favorieten.add(artistName);
-    img.src = "../image/selected_star.svg";
-    span.textContent = translations[currentLang].remove;
-  }
+  favorieten.has(artistName) ? favorieten.delete(artistName) : favorieten.add(artistName);
+  img.src = favorieten.has(artistName) ? "/image/selected_star.svg" : "/image/unselected_star.svg";
+  span.textContent = favorieten.has(artistName) ? translations[currentLang].remove : translations[currentLang].add;
+
   localStorage.setItem("favorieten", JSON.stringify([...favorieten]));
 };
 
